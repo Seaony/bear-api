@@ -66,6 +66,10 @@ class EggsController extends Controller
             return $this->response->errorBadRequest('无权操作');
         }
 
+        if ($egg->is_break) {
+            return $this->response->noContent();
+        }
+
         $egg->update([
             'is_break'   => true,
             'cracked_at' => Carbon::now()->toDateString(),
