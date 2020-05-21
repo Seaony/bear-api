@@ -31,14 +31,32 @@ class EggTransformer extends TransformerAbstract
             'countdown'     => $countdown,
             'cracked_at'    => (string) Carbon::parse($egg->cracked_at)->format('m月d日'),
             'breeding_at'   => (string) Carbon::parse($egg->breeding_at)->format('m月d日'),
-            'tips'          => $this->getTips($countdown),
+            'tips'          => $this->getTips($countdown, $egg->is_break),
             'user_id'       => (int) $egg->user_id,
             'created_at'    => (string) $egg->created_at,
         ];
     }
 
-    public function getTips($countdown)
+    public function getTips($countdown,$is_break = false)
     {
-        return '胚胎免疫系统正在发育，别让母猫乱跳乱跑流产，补充维生素 A，帮助母猫孕育生出大眼，不容易有眼疾。';
+        if ($is_break) {
+            return '小猫出生后请注意保暖，刚出生的新生小猫是通过哺乳来获取营养的，所以请保证母猫有获得足够的营养与食物。';
+        }
+
+        if ($countdown >= 50) {
+            return '怀孕成功后2-3周后乳头会有明显的肿胀和变粉。此阶段不要过度补充营养，预防营养过剩和胎儿发育过大。';
+        }
+
+        if ($countdown >= 22) {
+            return '胚胎免疫系统正在发育，别让母猫乱跳乱跑流产，补充维生素 A，帮助母猫孕育生出大眼，不容易有眼疾。';
+        }
+
+        if ($countdown >= 7) {
+            return '胚胎基本发育完整，母猫和胎儿需要大量的营养，要补充钙质和蛋白含量较高的食物，有宠物专用的钙片或钙粉之类。';
+        }
+
+        if ($countdown >= 0) {
+            return '待产阶段请提前给猫咪准备好产房，最好陪伴在它们身边，一来可以舒缓它们紧张的情绪，二来在特殊情况发生时可以及时帮助';
+        }
     }
 }
