@@ -37,7 +37,7 @@ class EggTransformer extends TransformerAbstract
         ];
     }
 
-    public function getTips($countdown,$is_break = false)
+    public function getTips($countdown, $is_break = false)
     {
         if ($is_break) {
             return '小猫出生后请注意保暖，刚出生的新生小猫是通过哺乳来获取营养的，所以请保证母猫有获得足够的营养与食物。';
@@ -55,8 +55,6 @@ class EggTransformer extends TransformerAbstract
             return '胚胎基本发育完整，母猫和胎儿需要大量的营养，要补充钙质和蛋白含量较高的食物，有宠物专用的钙片或钙粉之类。';
         }
 
-        if ($countdown >= 0) {
-            return '待产阶段请提前给猫咪准备好产房，最好陪伴在它们身边，一来可以舒缓它们紧张的情绪，二来在特殊情况发生时可以及时帮助';
-        }
+        return '待产阶段请提前给猫咪准备好产房，最好陪伴在它们身边，一来可以舒缓它们紧张的情绪，二来在特殊情况发生时可以及时帮助';
     }
 }
