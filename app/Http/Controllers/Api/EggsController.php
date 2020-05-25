@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Transformers\UnionTransformer;
 use App\Http\Requests\Api\Eggs\StoreRequest;
+use App\Http\Requests\Api\Eggs\CrackedRequest;
 
 class EggsController extends Controller
 {
@@ -60,6 +61,13 @@ class EggsController extends Controller
         return $this->response->noContent();
     }
 
+    /**
+     * 兼容原有 API
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Egg          $egg
+     *
+     * @return \Dingo\Api\Http\Response|void
+     */
     public function done(Request $request, Egg $egg)
     {
         if ($egg->user_id != Auth::id()) {
@@ -73,6 +81,31 @@ class EggsController extends Controller
         $egg->update([
             'is_break'   => true,
             'cracked_at' => Carbon::now()->toDateString(),
+        ]);
+
+        return $this->response->noContent();
+    }
+
+    /**
+     * @param \App\Http\Requests\Api\Eggs\CrackedRequest $request
+     * @param \App\Models\Egg                            $egg
+     *
+     * @return \Dingo\Api\Http\Response|void
+     */
+    public function cracked(CrackedRequest $request, Egg $egg)
+    {
+        if ($egg->user_id != Auth::id()) {
+            return $this->response->errorBadRequest('无权操作');
+        }
+
+        if ($egg->is_break) {
+            return $this->response->noContent();
+        }
+
+        $egg->update([
+            'is_break'   => true,
+            'cracked_at' => $request->get('cracked_at'),
+            'cat_number' => $request->get('cat_number'),
         ]);
 
         return $this->response->noContent();

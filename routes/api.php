@@ -28,6 +28,7 @@ app('Dingo\Api\Routing\Router')->version('v1', [
             $api->get('', 'EggsController@index');
             $api->post('', 'EggsController@store');
             $api->put('{egg}/done', 'EggsController@done');
+            $api->put('{egg}/cracked', 'EggsController@cracked');
             $api->delete('{egg}', 'EggsController@destroy');
         });
 
