@@ -48,10 +48,11 @@ class EggsController extends Controller
     {
         $data = $request->only([
             'male_name',
-            'pregnancy',
             'female_name',
             'breeding_at',
         ]);
+
+        $data['pregnancy'] = $request->get('pregnancy', 64);
 
         $data['user_id'] = Auth::id();
         $data['female_avatar'] = url(Arr::random($this->avatars));
