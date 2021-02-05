@@ -48,13 +48,14 @@ class EggsController extends Controller
     {
         $data = $request->only([
             'male_name',
+            'pregnancy',
             'female_name',
             'breeding_at',
         ]);
 
         $data['user_id'] = Auth::id();
         $data['female_avatar'] = url(Arr::random($this->avatars));
-        $data['cracked_at'] = Carbon::parse($data['breeding_at'])->addDay(65)->toDateString();
+        $data['cracked_at'] = Carbon::parse($data['breeding_at'])->addDay($data['pregnancy']+1)->toDateString();
 
         Egg::create($data);
 

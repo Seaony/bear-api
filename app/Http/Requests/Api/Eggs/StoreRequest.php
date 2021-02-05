@@ -26,6 +26,7 @@ class StoreRequest extends FormRequest
         return [
             'male_name'   => 'required|string',
             'female_name' => 'required|string',
+            'pregnancy'   => 'required|numeric',
             'breeding_at' => 'required|date',
         ];
     }
@@ -39,6 +40,7 @@ class StoreRequest extends FormRequest
             'male_name'   => '公猫名称',
             'female_name' => '母猫名称',
             'breeding_at' => '配种日期',
+            'pregnancy'   => '怀孕周期',
         ];
     }
 }
