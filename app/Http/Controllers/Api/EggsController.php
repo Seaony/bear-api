@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Egg;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Transformers\UnionTransformer;
 use App\Http\Requests\Api\Eggs\StoreRequest;
 use App\Http\Requests\Api\Eggs\CrackedRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class EggsController extends Controller
 {
@@ -50,12 +52,16 @@ class EggsController extends Controller
             'male_name',
             'female_name',
             'breeding_at',
+            'male_avatar',
+            'female_avatar',
+            'male_avatar',
         ]);
 
         $data['pregnancy'] = $request->get('pregnancy', 64);
 
         $data['user_id'] = Auth::id();
-        $data['female_avatar'] = url(Arr::random($this->avatars));
+        $data['female_avatar'] = $request->get('female_avatar');
+        $data['male_avatar'] = $request->get('male_avatar');
         $data['cracked_at'] = Carbon::parse($data['breeding_at'])->addDay($data['pregnancy']+1)->toDateString();
 
         Egg::create($data);
@@ -129,5 +135,45 @@ class EggsController extends Controller
         $egg->delete();
 
         return $this->response->noContent();
+    }
+
+    /**
+     * 上传猫咪头像
+     * @param Request $request
+     * @return \Dingo\Api\Http\Response|void
+     */
+    public function uploadAvatar(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image',
+        ]);
+
+        $avatar = $request->file('image');
+
+        // 记录用户上传图片，由于数据分析
+        $avatar->store('avatar');
+
+        $client = new Client();
+        try {
+            $response = $client->post(env('IDENTIFY_API', 'http://127.0.0.1:8080/identify'), [
+                'multipart' => [
+                    [
+                        'name'     => 'image',
+                        'contents' => fopen($avatar->getRealPath(), 'r')
+                    ],
+                ]
+            ])->getBody()->getContents();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return $this->response->errorInternal('图片服务异常，请稍后再试');
+        }
+        $data = json_decode($response, true);
+
+        //必须是猫图片，且置信度在30%以上（laybel能区分为cat基本可视为识别到猫咪，否则会归属到其他种类。增加score限制为了舍弃全标签整体很低，被迫归属为猫咪的极端情况）
+        if ($data['laybel'] == 'cat' && $data['score'] >= 0.3) { // TODO 增加模型准确度
+            $url = $avatar->store('images', 'osbridge');
+            return $this->response->array(['url' => Storage::disk('osbridge')->url($url)]);
+        }
+        return $this->response->errorBadRequest('未识别到猫咪，请上传有效图片');
     }
 }
