@@ -6,6 +6,7 @@ use App\Models\Egg;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Transformers\UnionTransformer;
@@ -60,8 +61,8 @@ class EggsController extends Controller
         $data['pregnancy'] = $request->get('pregnancy', 64);
 
         $data['user_id'] = Auth::id();
-        $data['female_avatar'] = $request->get('female_avatar');
-        $data['male_avatar'] = $request->get('male_avatar');
+        $data['female_avatar'] = $request->get('female_avatar', url(Arr::random($this->avatars)));
+        $data['male_avatar'] = $request->get('male_avatar', url(Arr::random($this->avatars)));
         $data['cracked_at'] = Carbon::parse($data['breeding_at'])->addDay($data['pregnancy']+1)->toDateString();
 
         Egg::create($data);

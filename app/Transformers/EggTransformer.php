@@ -27,7 +27,7 @@ class EggTransformer extends TransformerAbstract
             'male_name'     => (string) $egg->male_name,
             'female_name'   => (string) $egg->female_name,
             'female_avatar' => (string) $egg->female_avatar,
-            'male_avatar'   => (string) $egg->male_avatar,
+            'male_avatar'   => (string) $egg->male_avatar ?? '',
             'is_break'      => (boolean) $egg->is_break,
             'during'        => (int) Carbon::parse($egg->breeding_at)->diffInDays($egg->cracked_at),
             'countdown'     => $countdown,
@@ -37,7 +37,7 @@ class EggTransformer extends TransformerAbstract
             'tips'          => $this->getTips($countdown, $egg->is_break),
             'user_id'       => (int) $egg->user_id,
             'created_at'    => (string) $egg->created_at,
-            'cat_number'    => (int) $egg->cat_number
+            'cat_number'    => (int) $egg->cat_number ?? 0
         ];
     }
 
