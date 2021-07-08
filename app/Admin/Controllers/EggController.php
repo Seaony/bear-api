@@ -19,6 +19,7 @@ class EggController extends AdminController
     protected function grid()
     {
         return Grid::make(new Egg(['user']), function (Grid $grid) {
+            $grid->model()->orderBy('id', 'desc');
             $grid->column('id')->sortable();
             $grid->column('female_name')->filter(
                 Grid\Column\Filter\Equal::make()
@@ -43,7 +44,7 @@ class EggController extends AdminController
             ->expand(function () {
                 $card = new Card('用户open_id', $this->user->open_id);
                 return "<div style='padding:10px 10px 0'>$card</div>";
-            });
+            })->filter(Grid\Column\Filter\Equal::make());
             $grid->column('created_at')->sortable()->filter(
                 Grid\Column\Filter\Between::make()->datetime()
             );

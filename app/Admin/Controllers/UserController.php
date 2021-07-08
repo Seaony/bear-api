@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Renderable\EggTable;
 use App\Admin\Repositories\User;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
@@ -18,14 +19,18 @@ class UserController extends AdminController
     protected function grid()
     {
         return Grid::make(new User(), function (Grid $grid) {
-            $grid->column('id')->sortable();
-            $grid->column('open_id');
-            $grid->column('created_at')->sortable();
-
-            $grid->filter(function (Grid\Filter $filter) {
-                $filter->equal('id');
-                $filter->equal('open_id');
+            $grid->model()->withCount(['eggs'])->orderBy('id', 'desc');
+            $grid->column('id')->sortable()->filter(
+                Grid\Column\Filter\Equal::make()
+            );
+            $grid->column('open_id')->filter(
+                Grid\Column\Filter\Equal::make()
+            );
+            // 可以在闭包内返回异步加载类的实例
+            $grid->column('eggs_count')->sortable()->expand(function () {
+                return EggTable::make()->simple();
             });
+            $grid->column('created_at')->sortable();
         });
     }
 
