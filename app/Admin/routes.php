@@ -15,4 +15,5 @@ Route::group([
     $router->get('/', 'HomeController@index');
     $router->get('users', 'UserController@index');
     $router->get('eggs', 'EggController@index');
+    $router->resource('ads', 'AdController');
 });

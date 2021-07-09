@@ -31,6 +31,7 @@ app('Dingo\Api\Routing\Router')->version('v1', [
             $api->put('{egg}/done', 'EggsController@done');
             $api->put('{egg}/cracked', 'EggsController@cracked');
             $api->delete('{egg}', 'EggsController@destroy');
+            $api->post('ad', 'AdController@getAd');
         });
 
     });
