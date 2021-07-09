@@ -11,6 +11,6 @@ class AdController extends Controller
     public function ad()
     {
         $ad = Ad::where('status', Ad::STATUS_ONLINE)->orderBy('created_at', 'desc')->first();
-        return $this->response->array($ad);
+        return $this->response->array($ad->toArray());
     }
 }
