@@ -38,7 +38,7 @@ class EggController extends AdminController
                     0 => '未破壳',
                     1 => '已破壳',
                 ])
-            );;
+            );
             $grid->column('cat_number');
             $grid->column('user.open_id')->display('详情') // 设置按钮名称
             ->expand(function () {

@@ -18,8 +18,17 @@ class EggTable extends LazyRenderable
             $grid->column('female_name');
             $grid->column('female_avatar')->image('', 40, 40);
             $grid->column('male_name');
-            $grid->column('male_avatar');
-            $grid->column('is_break');
+            $grid->column('male_avatar')->image('', 40, 40);
+            $grid->column('is_break')->display(function ($value) {
+                return $value == 1 ? '已破壳': '未破壳';
+            })->dot([
+                1 => 'success'
+            ])->filter(
+                Grid\Column\Filter\In::make([
+                    0 => '未破壳',
+                    1 => '已破壳',
+                ])
+            );
             $grid->column('cat_number');
             $grid->column('created_at')->sortable();
             $grid->paginate(10);
