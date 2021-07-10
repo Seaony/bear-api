@@ -20,7 +20,7 @@ class EggTransformer extends TransformerAbstract
     public function transform(Egg $egg)
     {
         $countdown = (int) Carbon::now()->diffInDays($egg->cracked_at, false);
-        $passday = (int)Carbon::now()->diffInDays($egg->breeding_at);
+        $passday = (int)Carbon::now()->diffInDays($egg->cracked_at);
 
         return [
             'id'            => (int) $egg->id,
