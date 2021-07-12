@@ -23,6 +23,6 @@ class Ad extends Model
         if (preg_match('/^https?:\/\//', $value)) {
             return $value;
         }
-        return Storage::url($value);
+        return Storage::disk('osbridge')->url($value);
     }
 }
