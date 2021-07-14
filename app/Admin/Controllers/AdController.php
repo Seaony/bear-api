@@ -73,6 +73,8 @@ class AdController extends AdminController
                 \App\Models\Ad::STATUS_ONLINE => '上线',
                 \App\Models\Ad::STATUS_OFFLINE => '下线',
             ]);
+            $form->number('display_times')->default(1);
+            $form->number('display_interval')->placeholder('单位：天')->default(1);
             $form->datetime('start_time')->default(Carbon::now()->toDateTimeString());
             $form->datetime('end_time')->default(Carbon::now()->addWeek()->startOfDay()->toDateTimeString());
             $form->display('created_at');

@@ -20,7 +20,7 @@ class CreateAdsTable extends Migration
             $table->dateTime('end_time')->comment('结束时间');
             $table->unsignedTinyInteger('display_times')->default(1)->comment('展示总次数');
             $table->unsignedTinyInteger('display_interval')->default(1)->comment('展示间隔:天');
-            $table->unsignedTinyInteger('status')->default(\App\Models\Ad::STATUS_ONLINE)->comment('展示间隔:天');
+            $table->unsignedTinyInteger('status')->default(\App\Models\Ad::STATUS_ONLINE)->comment('状态，开启或关闭');
             $table->string('image')->nullable()->comment('展示图片');
             $table->string('url')->nullable()->comment('跳转地址');
             $table->timestamps();
