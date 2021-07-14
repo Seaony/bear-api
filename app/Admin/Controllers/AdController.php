@@ -3,7 +3,6 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Repositories\Ad;
-use App\Models\Poster;
 use Carbon\Carbon;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
@@ -21,8 +20,9 @@ class AdController extends AdminController
     {
         return Grid::make(new Ad(), function (Grid $grid) {
             $grid->column('id')->sortable();
+            $grid->column('title');
             $grid->column('image')->image('', 100, 100);
-            $grid->column('url');
+            $grid->column('url')->limit(20);
             $grid->column('status')->display(function ($value) {
                 return $value == \App\Models\Ad::STATUS_ONLINE ? '上线' : '下线';
             })->dot([
