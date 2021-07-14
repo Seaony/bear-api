@@ -111,10 +111,15 @@ class EggsController extends Controller
             return $this->response->noContent();
         }
 
+        $catNumber = $request->get('cat_number');
+        if (empty($catNumber)) {
+            $catNumber = null;
+        }
+
         $egg->update([
             'is_break' => true,
             'cracked_at' => $request->get('cracked_at'),
-            'cat_number' => $request->get('cat_number'),
+            'cat_number' => $catNumber,
         ]);
 
         return $this->response->noContent();
