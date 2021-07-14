@@ -63,7 +63,7 @@ class EggsController extends Controller
         $data['user_id'] = Auth::id();
         $data['female_avatar'] = $request->get('female_avatar', url(Arr::random($this->avatars)));
         $data['male_avatar'] = $request->get('male_avatar', url(Arr::random($this->avatars)));
-        $data['cracked_at'] = Carbon::parse($data['breeding_at'])->addDay($data['pregnancy']+1)->toDateString();
+        $data['cracked_at'] = Carbon::parse($data['breeding_at'])->addDay($data['pregnancy'] + 1)->toDateString();
 
         Egg::create($data);
 
@@ -73,7 +73,7 @@ class EggsController extends Controller
     /**
      * 兼容原有 API
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Egg          $egg
+     * @param \App\Models\Egg $egg
      *
      * @return \Dingo\Api\Http\Response|void
      */
@@ -88,7 +88,7 @@ class EggsController extends Controller
         }
 
         $egg->update([
-            'is_break'   => true,
+            'is_break' => true,
             'cracked_at' => Carbon::now()->toDateString(),
         ]);
 
@@ -97,7 +97,7 @@ class EggsController extends Controller
 
     /**
      * @param \App\Http\Requests\Api\Eggs\CrackedRequest $request
-     * @param \App\Models\Egg                            $egg
+     * @param \App\Models\Egg $egg
      *
      * @return \Dingo\Api\Http\Response|void
      */
@@ -112,7 +112,7 @@ class EggsController extends Controller
         }
 
         $egg->update([
-            'is_break'   => true,
+            'is_break' => true,
             'cracked_at' => $request->get('cracked_at'),
             'cat_number' => $request->get('cat_number'),
         ]);
@@ -122,7 +122,7 @@ class EggsController extends Controller
 
     /**
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Egg          $egg
+     * @param \App\Models\Egg $egg
      *
      * @return \Dingo\Api\Http\Response|void
      * @throws \Exception
@@ -159,7 +159,7 @@ class EggsController extends Controller
             $response = $client->post(env('IDENTIFY_API', 'http://127.0.0.1:8080/identify'), [
                 'multipart' => [
                     [
-                        'name'     => 'image',
+                        'name' => 'image',
                         'contents' => fopen($avatar->getRealPath(), 'r')
                     ],
                 ]
@@ -176,5 +176,28 @@ class EggsController extends Controller
             return $this->response->array(['url' => Storage::disk('osbridge')->url($url)]);
         }
         return $this->response->errorBadRequest('未识别到猫咪，请上传有效图片');
+    }
+
+    /**
+     * @param Request $request
+     * @param \App\Models\Egg $egg
+     *
+     * @return \Dingo\Api\Http\Response|void
+     */
+    public function update(Request $request, Egg $egg)
+    {
+        $request->validate([
+            'cat_number' => 'numeric|min:1|max:100'
+        ]);
+
+        if ($egg->user_id != Auth::id()) {
+            return $this->response->errorBadRequest('无权操作');
+        }
+
+        $egg->update([
+            'cat_number' => $request->get('cat_number'),
+        ]);
+
+        return $this->response->noContent();
     }
 }

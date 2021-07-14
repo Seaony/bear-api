@@ -25,7 +25,7 @@ class CrackedRequest extends FormRequest
     {
         return [
             'cracked_at' => 'required|date',
-            'cat_number' => 'nullable|numeric|max:100',
+            'cat_number' => 'nullable|numeric|max:20',
         ];
     }
 

@@ -52,6 +52,7 @@ class AdController extends AdminController
     {
         return Show::make($id, new Ad(), function (Show $show) {
             $show->field('id');
+            $show->field('image')->image();
             $show->field('created_at');
             $show->field('updated_at');
         });
