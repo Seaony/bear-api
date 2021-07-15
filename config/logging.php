@@ -99,6 +99,13 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'websocket' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/websocket.log'),
+            'level' => 'debug',
+            'days' => 7,
+        ]
     ],
 
 ];

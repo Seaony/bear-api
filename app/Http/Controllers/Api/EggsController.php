@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\EggCracked;
 use App\Models\Egg;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -121,7 +122,7 @@ class EggsController extends Controller
             'cracked_at' => $request->get('cracked_at'),
             'cat_number' => $catNumber,
         ]);
-
+        event(new EggCracked($egg));
         return $this->response->noContent();
     }
 
