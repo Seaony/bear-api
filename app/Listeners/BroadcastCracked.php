@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\EggCracked;
+use App\Models\Egg;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
@@ -29,8 +30,7 @@ class BroadcastCracked
      */
     public function handle(EggCracked $event)
     {
-        $num = $event->egg->cat_number ? $event->egg->cat_number.'只' : '新的';
-        $message = "恭喜喵妈{$event->egg->female_name}&喵爸{$event->egg->male_name}诞生了{$num}宝贝";
+        $message = self::generateMessage($event->egg);
         Log::info('broadcastCracked|message:'.$message);
         $client = new Client();
         $client->post(env('SOCKET_HTTP_BROADCAST', 'http://127.0.0.1:5293'), [
@@ -38,5 +38,14 @@ class BroadcastCracked
                 'message' => $message
             ]
         ])->getBody()->getContents();
+    }
+
+    public static function generateMessage(Egg $egg)
+    {
+        $num = $egg->cat_number ? $egg->cat_number.'只' : '新的';
+        $femaleName = htmlspecialchars($egg->female_name);
+        $maleName = htmlspecialchars($egg->male_name);
+        $message = "<p>恭喜喵妈<span style='color:#0880D5'>{$femaleName}</span>&喵爸<span style='color:#0880D5'>{$maleName}</span>诞生了{$num}宝贝</p>";
+        return $message;
     }
 }
