@@ -48,6 +48,9 @@ class EggController extends AdminController
             $grid->column('created_at')->sortable()->filter(
                 Grid\Column\Filter\Between::make()->datetime()
             );
+            $grid->column('cracked_at')->sortable()->filter(
+                Grid\Column\Filter\Between::make()->datetime()
+            );
 
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
