@@ -2,6 +2,8 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Charts\CatNumber;
+use App\Admin\Charts\NewUsers;
 use App\Admin\Metrics\Examples;
 use App\Http\Controllers\Controller;
 use Dcat\Admin\Http\Controllers\Dashboard;
@@ -24,11 +26,11 @@ class HomeController extends Controller
 
                 $row->column(6, function (Column $column) {
                     $column->row(function (Row $row) {
-                        $row->column(6, new Examples\NewUsers());
+                        $row->column(6, new NewUsers());
                         $row->column(6, new Examples\NewDevices());
                     });
 
-                    $column->row(new Examples\Sessions());
+                    $column->row(new CatNumber());
                     $column->row(new Examples\ProductOrders());
                 });
             });

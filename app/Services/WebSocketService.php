@@ -42,7 +42,7 @@ class WebSocketService implements WebSocketHandlerInterface
             case 'getNoticeList':
                 $noticeMessagesList = [];
                 // Todo: 热数据，Cache
-                $eggCreckedList = Egg::where('is_break', true)->orderBy('cracked_at')->limit(10)->get();
+                $eggCreckedList = Egg::where('is_break', true)->orderBy('cracked_at', 'desc')->limit(10)->get();
                 foreach ($eggCreckedList as $egg) {
                     $message = BroadcastCracked::generateMessage($egg);
                     $noticeMessagesList[] = $message;

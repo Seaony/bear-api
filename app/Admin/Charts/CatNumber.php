@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Admin\Metrics\Examples;
+namespace App\Admin\Charts;
 
+use App\Models\Egg;
+use Carbon\Carbon;
 use Dcat\Admin\Admin;
 use Dcat\Admin\Widgets\Metrics\Bar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
-class Sessions extends Bar
+class CatNumber extends Bar
 {
     /**
      * 初始化卡片内容
@@ -22,22 +25,11 @@ class Sessions extends Bar
         // 卡片内容宽度
         $this->contentWidth(5, 7);
         // 标题
-        $this->title('Avg Sessions');
+        $this->title('生产小猫数量分布');
         // 设置下拉选项
         $this->dropdown([
-            '7' => 'Last 7 Days',
-            '28' => 'Last 28 Days',
+            'all' => 'All',
             '30' => 'Last Month',
-            '365' => 'Last Year',
-        ]);
-        // 设置图表颜色
-        $this->chartColors([
-            $dark35,
-            $dark35,
-            $color->primary(),
-            $dark35,
-            $dark35,
-            $dark35
         ]);
     }
 
@@ -50,33 +42,43 @@ class Sessions extends Bar
      */
     public function handle(Request $request)
     {
-        switch ($request->get('option')) {
-            case '7':
-            default:
-                // 卡片内容
-                $this->withContent('2.7k', '+5.2%');
-
-                // 图表数据
-                $this->withChart([
-                    [
-                        'name' => '数量',
-                        'data' => [75, 125, 225, 175, 125, 75, 25],
-                    ],
-                ]);
+        $days = $request->get('option', 'all');
+        // Todo: 慢查询优化
+        $query = Egg::selectRaw('cat_number, count(*) as count')->whereNotNull('cat_number');
+        if ($days !== 'all') {
+            $query = $query->where('cracked_at', '>=', Carbon::now()->addDays(-$days));
         }
+        $data = $query->groupBy('cat_number')->get();
+        $result = $data->pluck('count', 'cat_number')->toArray();
+
+        // 图表数据
+        $this->withChart([
+            [
+                'name' => '数量',
+                'data' => array_values($result),
+            ],
+        ], array_keys($result));
+
+        // 卡片内容
+        arsort($result);
+        $maxNum = array_key_first($result);
+        $maxCount = $result[$maxNum];
+        $this->withContent("众数:{$maxNum}", "共{$maxCount}条");
     }
 
     /**
      * 设置图表数据.
      *
      * @param array $data
+     * @param array $xaxis
      *
      * @return $this
      */
-    public function withChart(array $data)
+    public function withChart(array $data, array $xaxis)
     {
         return $this->chart([
             'series' => $data,
+            'xaxis.categories' => $xaxis
         ]);
     }
 
@@ -105,7 +107,7 @@ class Sessions extends Bar
         <h1 class="font-lg-2 mt-2 mb-0">{$title}</h1>
         <h5 class="font-medium-2" style="margin-top: 10px;">
             <span class="text-{$style}">{$value} </span>
-            <span>vs {$label}</span>
+            <span>in {$label}</span>
         </h5>
     </div>
 
