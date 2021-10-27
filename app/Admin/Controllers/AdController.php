@@ -53,6 +53,7 @@ class AdController extends AdminController
         return Show::make($id, new Ad(), function (Show $show) {
             $show->field('id');
             $show->field('image')->image();
+            $show->field('url');
             $show->field('created_at');
             $show->field('updated_at');
         });
@@ -68,6 +69,8 @@ class AdController extends AdminController
         return Form::make(new Ad(), function (Form $form) {
             $form->display('id');
             $form->text('title');
+            $form->text('appid');
+            $form->text('url');
             $form->image('image')->removable()->autoUpload()->required()->uniqueName();
             $form->switch('status')->options([
                 \App\Models\Ad::STATUS_ONLINE => '上线',
