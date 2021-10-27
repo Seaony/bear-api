@@ -179,6 +179,9 @@ class EggsController extends Controller
         //必须是猫图片，且置信度在30%以上（laybel能区分为cat基本可视为识别到猫咪，否则会归属到其他种类。增加score限制为了舍弃全标签整体很低，被迫归属为猫咪的极端情况）
         if ($data['laybel'] == 'cat' && $data['score'] >= 0.3) { // TODO 增加模型准确度
             $url = $avatar->store('images', 'osbridge');
+            if (!$url) {
+                return $this->response->errorBadRequest('图片保存失败，请稍后再试');
+            }
             return $this->response->array(['url' => Storage::disk('osbridge')->url($url)]);
         }
         return $this->response->errorBadRequest('未识别到猫咪，请上传有效图片');
