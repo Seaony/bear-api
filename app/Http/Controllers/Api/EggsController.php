@@ -160,31 +160,35 @@ class EggsController extends Controller
         // 记录用户上传图片，由于数据分析
         $avatar->store('avatar');
 
-        $client = new Client();
-        try {
-            $response = $client->post(env('IDENTIFY_API', 'http://127.0.0.1:8080/identify'), [
-                'multipart' => [
-                    [
-                        'name' => 'image',
-                        'contents' => fopen($avatar->getRealPath(), 'r')
-                    ],
-                ]
-            ])->getBody()->getContents();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return $this->response->errorInternal('图片服务异常，请稍后再试');
-        }
-        $data = json_decode($response, true);
-
-        //必须是猫图片，且置信度在30%以上（laybel能区分为cat基本可视为识别到猫咪，否则会归属到其他种类。增加score限制为了舍弃全标签整体很低，被迫归属为猫咪的极端情况）
-        if ($data['laybel'] == 'cat' && $data['score'] >= 0.3) { // TODO 增加模型准确度
-            $url = $avatar->store('images', 'osbridge');
-            if (!$url) {
-                return $this->response->errorBadRequest('图片保存失败，请稍后再试');
+        // 是否开启猫咪识别
+        if (env('IDENTIFY_SWITCH') == 1) {
+            $client = new Client();
+            try {
+                $response = $client->post(env('IDENTIFY_API', 'http://127.0.0.1:8080/identify'), [
+                    'multipart' => [
+                        [
+                            'name' => 'image',
+                            'contents' => fopen($avatar->getRealPath(), 'r')
+                        ],
+                    ]
+                ])->getBody()->getContents();
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+                return $this->response->errorInternal('图片服务异常，请稍后再试');
             }
-            return $this->response->array(['url' => Storage::disk('osbridge')->url($url)]);
+            $data = json_decode($response, true);
+
+            //必须是猫图片，且置信度在30%以上（laybel能区分为cat基本可视为识别到猫咪，否则会归属到其他种类。增加score限制为了舍弃全标签整体很低，被迫归属为猫咪的极端情况）
+            if ($data['laybel'] != 'cat' || $data['score'] < 0.3) { // TODO 增加模型准确度
+                return $this->response->errorBadRequest('未识别到猫咪，请上传有效图片');
+            }
         }
-        return $this->response->errorBadRequest('未识别到猫咪，请上传有效图片');
+
+        $url = $avatar->store('images', 'osbridge');
+        if (!$url) {
+            return $this->response->errorBadRequest('图片保存失败，请稍后再试');
+        }
+        return $this->response->array(['url' => Storage::disk('osbridge')->url($url)]);
     }
 
     /**
