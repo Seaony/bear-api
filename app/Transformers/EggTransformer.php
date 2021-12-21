@@ -20,20 +20,24 @@ class EggTransformer extends TransformerAbstract
     public function transform(Egg $egg)
     {
         $countdown = (int) Carbon::now()->diffInDays($egg->cracked_at, false);
+        $passday = (int)Carbon::now()->diffInDays($egg->cracked_at);
 
         return [
             'id'            => (int) $egg->id,
             'male_name'     => (string) $egg->male_name,
             'female_name'   => (string) $egg->female_name,
             'female_avatar' => (string) $egg->female_avatar,
+            'male_avatar'   => (string) $egg->male_avatar ?? '',
             'is_break'      => (boolean) $egg->is_break,
             'during'        => (int) Carbon::parse($egg->breeding_at)->diffInDays($egg->cracked_at),
             'countdown'     => $countdown,
+            'passday'       => $passday,
             'cracked_at'    => (string) Carbon::parse($egg->cracked_at)->format('m月d日'),
             'breeding_at'   => (string) Carbon::parse($egg->breeding_at)->format('m月d日'),
             'tips'          => $this->getTips($countdown, $egg->is_break),
             'user_id'       => (int) $egg->user_id,
             'created_at'    => (string) $egg->created_at,
+            'cat_number'    => (int) $egg->cat_number ?? 0
         ];
     }
 

@@ -27,11 +27,13 @@ app('Dingo\Api\Routing\Router')->version('v1', [
         $api->group(['prefix' => 'eggs'], function ($api) {
             $api->get('', 'EggsController@index');
             $api->post('', 'EggsController@store');
+            $api->post('upload-avatar', 'EggsController@uploadAvatar');
             $api->put('{egg}/done', 'EggsController@done');
             $api->put('{egg}/cracked', 'EggsController@cracked');
             $api->delete('{egg}', 'EggsController@destroy');
+            $api->put('{egg}', 'EggsController@update');
         });
-
+        $api->post('ad', 'AdController@ad');
     });
 
 });

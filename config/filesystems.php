@@ -64,6 +64,14 @@ return [
             'url'    => env('AWS_URL'),
         ],
 
+        'osbridge' => [
+            'driver' => 'osbridge',
+            'url' => env('OS_BRIDGE_URL'),
+            'app_id' => env('OS_BRIDGE_APP_ID'),
+            'app_token' => env('OS_BRIDGE_APP_TOKEN'),
+            //'log_channel' => env('OS_BRIDGE_LOG_CHANNEL'),
+            //'cdn_url' => env('OS_BRIDGE_CDN_URL')
+        ]
     ],
 
 ];
