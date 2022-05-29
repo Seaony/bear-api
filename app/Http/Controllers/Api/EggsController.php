@@ -15,6 +15,7 @@ use App\Http\Requests\Api\Eggs\StoreRequest;
 use App\Http\Requests\Api\Eggs\CrackedRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use mysql_xdevapi\Exception;
 
 class EggsController extends Controller
 {
@@ -104,6 +105,10 @@ class EggsController extends Controller
      */
     public function cracked(CrackedRequest $request, Egg $egg)
     {
+        $request->validate([
+            'cat_number' => 'nullable|int|min:1, max:20',
+        ]);
+
         if ($egg->user_id != Auth::id()) {
             return $this->response->errorBadRequest('无权操作');
         }
@@ -112,15 +117,11 @@ class EggsController extends Controller
             return $this->response->noContent();
         }
 
-        $catNumber = $request->get('cat_number');
-        if (empty($catNumber)) {
-            $catNumber = null;
-        }
-
         $egg->update([
             'is_break' => true,
             'cracked_at' => $request->get('cracked_at'),
-            'cat_number' => $catNumber,
+            'cat_number' => $request->get('cat_number'),
+            'images' => $request->get('images'),
         ]);
         event(new EggCracked($egg));
         return $this->response->noContent();
@@ -152,7 +153,8 @@ class EggsController extends Controller
     public function uploadAvatar(Request $request)
     {
         $request->validate([
-            'image' => 'required|image',
+            'image' => 'required|image|max:1024',
+            'index' => 'int'
         ]);
 
         $avatar = $request->file('image');
@@ -188,7 +190,10 @@ class EggsController extends Controller
         if (!$url) {
             return $this->response->errorBadRequest('图片保存失败，请稍后再试');
         }
-        return $this->response->array(['url' => Storage::disk('osbridge')->url($url)]);
+        return $this->response->array([
+            'url' => Storage::disk('osbridge')->url($url),
+            'index' => $request->get('index'), // 批量上传时，网络请求完成顺序不确定，请求携带下标，识别不同图片顺序
+        ]);
     }
 
     /**

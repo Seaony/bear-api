@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Database\QueryException;
 use League\Fractal\Manager;
 use App\Serializers\ArraySerializer;
 use Illuminate\Support\ServiceProvider;
@@ -11,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AppServiceProvider extends ServiceProvider
@@ -38,6 +40,10 @@ class AppServiceProvider extends ServiceProvider
 
         app('Dingo\Api\Exception\Handler')->register(function (ValidationException $e) {
             throw new BadRequestHttpException($e->validator->errors()->first());
+        });
+
+        app('Dingo\Api\Exception\Handler')->register(function (QueryException $e) {
+            throw new ServiceUnavailableHttpException(10, 'database error');
         });
     }
 

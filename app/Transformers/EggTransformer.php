@@ -13,14 +13,21 @@ class EggTransformer extends TransformerAbstract
     protected $defaultIncludes = [];
 
     /**
-     * @param \App\Models\BetterTagInSkinAlgorithm $algorithm
+     * 服务端尽量多处理数据，前端直接使用对应的值
+     * @param \App\Models\Egg $egg
      *
      * @return array
      */
     public function transform(Egg $egg)
     {
+        $crackedAtCarbon = Carbon::parse($egg->cracked_at);
+        $breedingAtCarbon = Carbon::parse($egg->breeding_at);
+        // 预产期倒计时天数。cracked_at创建时是预产期，破壳后更新为实际破壳日期
         $countdown = (int) Carbon::now()->diffInDays($egg->cracked_at, false);
-        $passday = (int)Carbon::now()->diffInDays($egg->cracked_at);
+        // 距破壳天数
+        $passday = (int)Carbon::now()->diffInDays($crackedAtCarbon);
+        // 距配种天数
+        $breedPassday = (int)Carbon::now()->diffInDays($breedingAtCarbon);
 
         return [
             'id'            => (int) $egg->id,
@@ -32,12 +39,15 @@ class EggTransformer extends TransformerAbstract
             'during'        => (int) Carbon::parse($egg->breeding_at)->diffInDays($egg->cracked_at),
             'countdown'     => $countdown,
             'passday'       => $passday,
-            'cracked_at'    => (string) Carbon::parse($egg->cracked_at)->format('m月d日'),
-            'breeding_at'   => (string) Carbon::parse($egg->breeding_at)->format('m月d日'),
+            'breed_passday' => $breedPassday,
+            'cracked_at'    => (string) $crackedAtCarbon->format($crackedAtCarbon->year == Carbon::now()->year ? 'm月d日' : 'Y年m月d日'),
+            'breeding_at'   => (string) $breedingAtCarbon->format($breedingAtCarbon->year == Carbon::now()->year ? 'm月d日' : 'Y年m月d日'),
             'tips'          => $this->getTips($countdown, $egg->is_break),
             'user_id'       => (int) $egg->user_id,
             'created_at'    => (string) $egg->created_at,
-            'cat_number'    => (int) $egg->cat_number ?? 0
+            'cat_number'    => (int) $egg->cat_number ?? 0,
+            'updated_at'    => (string) $egg->updated_at,
+            'images'        => $egg->images,
         ];
     }
 

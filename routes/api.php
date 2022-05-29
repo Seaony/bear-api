@@ -34,6 +34,8 @@ app('Dingo\Api\Routing\Router')->version('v1', [
             $api->put('{egg}', 'EggsController@update');
         });
         $api->post('ad', 'AdController@ad');
+        $api->post('userinfo', 'UserController@getUserInfo');
+        $api->post('update-userinfo', 'UserController@updateUserInfo');
     });
 
 });

@@ -11,6 +11,9 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
+    public const SEX_MAN = 1;
+    public const SEX_WOMAN = 2;
+
     /**
      * The attributes that are mass assignable.
      *

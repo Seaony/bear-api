@@ -21,7 +21,7 @@ class UnionTransformer extends TransformerAbstract
     ];
 
     /**
-     * @param \App\Models\BetterTagInSkinAlgorithm $algorithm
+     * @param \App\Models\Egg $eggs
      *
      * @return array
      */
@@ -71,6 +71,7 @@ class UnionTransformer extends TransformerAbstract
             ->eggs()
             ->where('is_break', true)
             ->orderByDesc('cracked_at')
+            ->orderByDesc('updated_at')
             ->get();
 
         return $this->collection($eggs, new EggTransformer());

@@ -33,12 +33,17 @@ class BroadcastCracked
         $message = self::generateMessage($event->egg);
         Log::info('broadcastCracked|message:'.$message);
         $client = new Client();
-        $client->post(env('SOCKET_HTTP_BROADCAST', 'http://127.0.0.1:5293'), [
-            'form_params' => [
-                'message' => $message
-            ]
-        ])->getBody()->getContents();
+        try {
+            $client->post(env('SOCKET_HTTP_BROADCAST', 'http://127.0.0.1:5293'), [
+                'form_params' => [
+                    'message' => $message
+                ]
+            ])->getBody()->getContents();
+        }catch (\Exception $e) {
+            Log::error('BroadcastCracked err:'.$e->getMessage());
+        }
     }
+
 
     public static function generateMessage(Egg $egg)
     {

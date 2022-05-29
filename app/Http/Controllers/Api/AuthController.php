@@ -16,6 +16,8 @@ class AuthController extends Controller
 
         $open_id = Arr::get($parsed, 'openid');
 
+        abort_if(empty($open_id), 401, 'openid err');
+
         $user = User::firstOrCreate(['open_id' => $open_id]);
 
         return $this->response->array([
